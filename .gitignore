@@ -1,0 +1,48 @@
+# OASIS bruto e dados processados — nunca commitar (volume + dados sensíveis de pacientes)
+data/
+*.nii
+*.nii.gz
+*.npy
+*.h5
+*.hdf5
+
+# Checkpoints e logs de treino
+*.pt
+*.pth
+*.ckpt
+experiments/**/checkpoints/
+experiments/**/logs/
+runs/
+wandb/
+mlruns/
+
+# Resultados pesados (manter só os finais, escolher manualmente o que commitar)
+results/**/*.png
+results/**/*.jpg
+!results/**/final_*.png
+!results/**/final_*.jpg
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Segredos
+.env
+.env.*
+!.env.example
