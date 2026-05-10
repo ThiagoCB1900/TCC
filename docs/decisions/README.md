@@ -54,3 +54,4 @@ Optamos por **X**. Justificativa em 2-4 linhas, ancorada em literatura, dados ou
 | [0003](0003-hardware-colab-para-treino.md) | Treino no Colab, dev local em CPU (RX6600 não viável) | Accepted | 2026-05-10 |
 | [0004](0004-preprocessamento-resize-224.md) | Resize 224×224 squash, manter RGB sintético | Accepted | 2026-05-10 |
 | [0005](0005-metricas-primarias.md) | Métricas primárias: macro-F1, balanced accuracy, AUC | Accepted | 2026-05-10 |
+| [0006](0006-dataset-augmentations-e-label-encoding.md) | Dataset PyTorch: augmentations leves e label encoding por severidade | Accepted | 2026-05-10 |

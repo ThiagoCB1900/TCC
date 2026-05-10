@@ -22,7 +22,8 @@
 - **Hardware:** aluno tem RX6600 (AMD). Em Windows o suporte de PyTorch para AMD é limitado (DirectML experimental; ROCm é só Linux e nem suporta a 6600). **Decisão: EDA e dev em CPU local; treino do baseline e modelos em Colab (T4/A100).**
 - **EDA executada (2026-05-10):** outputs em `results/eda/` (manifest.csv com 86.437 linhas, summary.json, eda_report.md, 7 figuras).
 - **Split por paciente executado (2026-05-10):** `src/data/splits.py` produz `experiments/splits/split_v1.json` reprodutível (seed=42, 70/15/15, estratificado por class_3). 242 train / 52 val / 53 test sujeitos; proporções dentro de ~1% da distribuição global em todas as classes. Validações automáticas (sets disjuntos, cobertura de classes) passaram.
-- **Próximo passo imediato:** implementar `src/data/dataset.py` (Dataset + DataLoader PyTorch consumindo `split_v1.json`, resize 224×224 squash, normalização ImageNet, augmentations leves no train), depois baseline ResNet-50.
+- **Dataset PyTorch implementado (2026-05-10):** `src/data/dataset.py` com `OASISDataset` (lê manifesto + split JSON, filtra por fold, label encoding por severidade clínica) + `build_dataloaders`. Pipeline: resize 224×224 squash + ImageNet norm + augmentations leves só no train (flip horizontal, rotação ±5°, jitter brilho/contraste). Validado em `src/data/inspect_dataset.py` com inspeção visual em `results/eda/figures/dataset_inspection.png` e `dataset_augmentation_check.png` — checkpoint anti-erro motivado por F-0003.
+- **Próximo passo imediato:** baseline ResNet-50 com pesos ImageNet via timm — `src/models/resnet.py` + loop de treino mínimo em `src/training/train.py`. Smoke test local (poucas iterações em CPU); treino real no Colab.
 
 ## Base de dados — versão Kaggle pré-processada (mudança importante)
 
@@ -62,6 +63,7 @@ A base original do plano era OASIS-1 bruto (NIfTI 3D + scripts FSL/BET). O aluno
 | Hardware de treino | Colab (T4 grátis ou Pro) — local apenas para dev | **fixado** | [ADR-0003](docs/decisions/0003-hardware-colab-para-treino.md) |
 | Pré-processamento | Resize squash 224×224, RGB sintético mantido | **fixado** | [ADR-0004](docs/decisions/0004-preprocessamento-resize-224.md) |
 | Métricas primárias | macro-F1, balanced accuracy, AUC, McNemar | **fixado** | [ADR-0005](docs/decisions/0005-metricas-primarias.md) |
+| Augmentations + label encoding | Flip H + rot ±5° + jitter leve só no train; classes 0=non, 1=very_mild, 2=mild_or_moderate | **fixado** | [ADR-0006](docs/decisions/0006-dataset-augmentations-e-label-encoding.md) |
 | Modelos comparados | ViT-Base/16 + Swin-T | a confirmar | — |
 | Baseline obrigatório | ResNet-50 com pesos ImageNet | fixo do plano | — |
 
@@ -147,6 +149,7 @@ TCC/
 5. **`n_acquisitions` no manifesto deve agrupar por (subject, session, mpr)** — não só (subject, mpr) — senão sub-conta os MR2 dos 19 sujeitos. Bug pego e corrigido na primeira execução da EDA.
 6. **`.gitignore` `Data/` precisa de barra inicial (`/Data/`):** sem âncora, a regra casa com `src/data/` no Windows (case-insensitive) e ignora silenciosamente os scripts de EDA. Detalhes em F-0006.
 7. **Discrepância de pacientes Kaggle vs realidade:** o texto do Kaggle anuncia "461 patients" mas o que está em `Data/` são **347 pacientes** (IDs OAS1_0001 a OAS1_0382, com 35 buracos internos + IDs ≥383 ausentes). OASIS-1 oficial tem 416 sujeitos (Marcus 2007), então estamos com ~83% do dataset oficial. Provável causa: uploader excluiu pacientes sem CDR válido. **Não é download incompleto** — é o que o Kaggle disponibilizou. Documentar essa limitação no TCC.
+8. **Val/test sem shuffle agrupam classes nos primeiros batches.** Manifesto está ordenado por classe; sem shuffle (correto, para determinismo de avaliação), `next(iter(val_loader))` pode mostrar só uma classe. Não é bug — métricas agregadas no fold permanecem corretas. Detalhes em F-0007.
 
 ## Sistema de anotações — ADRs e Findings
 

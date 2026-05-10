@@ -48,3 +48,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0004](0004-mr2-reliability-subset.md) | MR2 em 19 controles é o sub-conjunto reliability do OASIS-1 | Confirmed | 2026-05-10 |
 | [0005](0005-notebook-cnn-falhas-metodologicas.md) | Notebook CNN comparativo (uraninjo dataset) — 5 falhas metodológicas | Confirmed | 2026-05-10 |
 | [0006](0006-gitignore-windows-case-insensitive.md) | `.gitignore` `Data/` sem âncora ignora `src/data/` no Windows | Confirmed | 2026-05-10 |
+| [0007](0007-val-test-batches-agrupados-por-classe.md) | Batches de val/test sem shuffle ficam agrupados por classe (não é bug) | Confirmed | 2026-05-10 |
