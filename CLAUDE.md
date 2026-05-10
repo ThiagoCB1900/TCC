@@ -23,7 +23,8 @@
 - **EDA executada (2026-05-10):** outputs em `results/eda/` (manifest.csv com 86.437 linhas, summary.json, eda_report.md, 7 figuras).
 - **Split por paciente executado (2026-05-10):** `src/data/splits.py` produz `experiments/splits/split_v1.json` reprodutível (seed=42, 70/15/15, estratificado por class_3). 242 train / 52 val / 53 test sujeitos; proporções dentro de ~1% da distribuição global em todas as classes. Validações automáticas (sets disjuntos, cobertura de classes) passaram.
 - **Dataset PyTorch implementado (2026-05-10):** `src/data/dataset.py` com `OASISDataset` (lê manifesto + split JSON, filtra por fold, label encoding por severidade clínica) + `build_dataloaders`. Pipeline: resize 224×224 squash + ImageNet norm + augmentations leves só no train (flip horizontal, rotação ±5°, jitter brilho/contraste). Validado em `src/data/inspect_dataset.py` com inspeção visual em `results/eda/figures/dataset_inspection.png` e `dataset_augmentation_check.png` — checkpoint anti-erro motivado por F-0003.
-- **Próximo passo imediato:** baseline ResNet-50 com pesos ImageNet via timm — `src/models/resnet.py` + loop de treino mínimo em `src/training/train.py`. Smoke test local (poucas iterações em CPU); treino real no Colab.
+- **Literatura auditada (2026-05-10):** varredura sistemática nos 14 PDFs em `docs/Papers/Trabalhos Relacionados/` via `src/data/survey_imbalance_handling.py`. Resultados em F-0008 (RanCom-ViT no mesmo dataset, 99,54% inflado por split inválido) e F-0009 (síntese de como ViT+Alzheimer trata desbalanceamento). Decisão fundamentada em ADR-0007: weighted CE 'balanced' + ablação sem peso.
+- **Próximo passo imediato:** baseline ResNet-50 com pesos ImageNet via timm — `src/models/resnet.py` + loop de treino mínimo em `src/training/train.py` consumindo dataloaders do ADR-0006 e weighted loss do ADR-0007. Smoke test local; treino real no Colab.
 
 ## Base de dados — versão Kaggle pré-processada (mudança importante)
 
@@ -64,6 +65,7 @@ A base original do plano era OASIS-1 bruto (NIfTI 3D + scripts FSL/BET). O aluno
 | Pré-processamento | Resize squash 224×224, RGB sintético mantido | **fixado** | [ADR-0004](docs/decisions/0004-preprocessamento-resize-224.md) |
 | Métricas primárias | macro-F1, balanced accuracy, AUC, McNemar | **fixado** | [ADR-0005](docs/decisions/0005-metricas-primarias.md) |
 | Augmentations + label encoding | Flip H + rot ±5° + jitter leve só no train; classes 0=non, 1=very_mild, 2=mild_or_moderate | **fixado** | [ADR-0006](docs/decisions/0006-dataset-augmentations-e-label-encoding.md) |
+| Tratamento de desbalanceamento | Weighted CE 'balanced' (sklearn) com ablação sem peso | **fixado** | [ADR-0007](docs/decisions/0007-tratamento-de-desbalanceamento.md) |
 | Modelos comparados | ViT-Base/16 + Swin-T | a confirmar | — |
 | Baseline obrigatório | ResNet-50 com pesos ImageNet | fixo do plano | — |
 
@@ -167,7 +169,12 @@ Toda **decisão metodológica** (split, classes, métricas, modelo, preprocessin
 
 ## Trabalho relacionado / comparativo
 
-Aluno incorporou em `CNN/Alzheimers disease dataset/Alzheimer.ipynb` um notebook prévio que será usado como comparativo no TCC. **Dataset diferente do nosso** (`uraninjo/augmented-alzheimer-mri-dataset`, sem subject IDs) e com **5 falhas metodológicas identificadas** — ver F-0005 para auditoria completa. Notebook é caso de estudo de "o que **não** fazer", justificativa empírica para nossas escolhas (split por paciente, transfer learning, métricas balanceadas, interpretabilidade).
+Dois trabalhos serão usados como comparativos diretos no TCC:
+
+1. **Notebook CNN do aluno** (`CNN/Alzheimers disease dataset/Alzheimer.ipynb`): dataset `uraninjo/augmented-alzheimer-mri-dataset` (diferente do nosso, sem subject IDs); **5 falhas metodológicas** documentadas em **[F-0005](docs/findings/0005-notebook-cnn-falhas-metodologicas.md)**.
+2. **RanCom-ViT** (Lu, Zhang & Yao, *Biomedical Signal Processing and Control*, 2025): paper publicado que usa **EXATAMENTE o mesmo dataset Kaggle que o nosso** e reporta 99,54% acurácia. Auditado em **[F-0008](docs/findings/0008-rancom-vit-mesmo-dataset-metodologia-comprometida.md)**: split aleatório por slice (não por paciente), descrição errada do plano de slicing (chama de "sagital" o que é axial), métricas sem balanced accuracy.
+
+Ambos os trabalhos são casos de estudo de prática não-rigorosa que justificam empiricamente nossas escolhas metodológicas. **Não almejar superar os 99,54% do RanCom-ViT** — é artefato metodológico. Nossa baseline será comparada principalmente com **ela mesma** (ablações: com vs sem weighted loss, com vs sem augmentation).
 
 A pasta `CNN/.../Alzheimer's dataset/` contém ~40k imagens (~1.5GB). **Imagens ignoradas no `.gitignore`**, mas o `.ipynb` permanece versionado como fonte primária. Não modificar conteúdo da pasta — é fonte primária.
 

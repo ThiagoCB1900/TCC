@@ -50,3 +50,6 @@ pyyaml==6.0.2
 
 # --- Renderização de tabelas markdown (usado por pandas.DataFrame.to_markdown) ---
 tabulate==0.9.0
+
+# --- Extração de texto de PDFs (consulta a literatura em docs/Papers) ---
+pypdf==5.0.0

@@ -49,3 +49,5 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0005](0005-notebook-cnn-falhas-metodologicas.md) | Notebook CNN comparativo (uraninjo dataset) — 5 falhas metodológicas | Confirmed | 2026-05-10 |
 | [0006](0006-gitignore-windows-case-insensitive.md) | `.gitignore` `Data/` sem âncora ignora `src/data/` no Windows | Confirmed | 2026-05-10 |
 | [0007](0007-val-test-batches-agrupados-por-classe.md) | Batches de val/test sem shuffle ficam agrupados por classe (não é bug) | Confirmed | 2026-05-10 |
+| [0008](0008-rancom-vit-mesmo-dataset-metodologia-comprometida.md) | RanCom-ViT (Lu 2025) usa o mesmo dataset com metodologia comprometida | Confirmed | 2026-05-10 |
+| [0009](0009-survey-tratamento-desbalanceamento-na-literatura.md) | Como a literatura de ViT+Alzheimer trata desbalanceamento (varredura sistemática) | Confirmed | 2026-05-10 |

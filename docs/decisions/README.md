@@ -55,3 +55,4 @@ Optamos por **X**. Justificativa em 2-4 linhas, ancorada em literatura, dados ou
 | [0004](0004-preprocessamento-resize-224.md) | Resize 224×224 squash, manter RGB sintético | Accepted | 2026-05-10 |
 | [0005](0005-metricas-primarias.md) | Métricas primárias: macro-F1, balanced accuracy, AUC | Accepted | 2026-05-10 |
 | [0006](0006-dataset-augmentations-e-label-encoding.md) | Dataset PyTorch: augmentations leves e label encoding por severidade | Accepted | 2026-05-10 |
+| [0007](0007-tratamento-de-desbalanceamento.md) | Weighted CrossEntropy "balanced" com ablação sem peso | Accepted | 2026-05-10 |
