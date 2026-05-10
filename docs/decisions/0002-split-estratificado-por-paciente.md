@@ -40,3 +40,22 @@ K-fold (alternativa C) fica como evolução futura se o orientador pedir, mas **
 - Findings: F-0002, F-0004, F-0005
 - CLAUDE.md, "Regras críticas — NÃO violar", item 1
 - Marcus et al. 2007 (paper original OASIS-1)
+
+## Implementação concreta (2026-05-10)
+
+Implementado em `src/data/splits.py`. Saída em `experiments/splits/split_v1.json`. Comando reprodutível:
+
+```powershell
+python -m src.data.splits --seed 42
+```
+
+**Resultado para o split v1 (seed=42, stratify=class_3, 70/15/15):**
+
+| Fold | n_subjects | n_slices | non_demented | very_mild | mild_or_moderate |
+|---|---:|---:|---:|---:|---:|
+| train | 242 | 60.329 | 185 | 40 | 17 |
+| val | 52 | 12.871 | 40 | 9 | 3 |
+| test | 53 | 13.237 | 41 | 9 | 3 |
+| **Total** | **347** | **86.437** | **266** | **58** | **23** |
+
+Proporções por fold ficam dentro de ~1% da distribuição global em todas as classes. Asserts de disjunção entre folds e cobertura de classes (todas as classes em todos os folds) passaram. Reprodutibilidade verificada: re-rodar com seed=42 produz o mesmo conjunto de subjects por fold (apenas o campo `created_at` muda).

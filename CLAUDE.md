@@ -20,8 +20,9 @@
 - **Estrutura de pastas criada:** sim (ver "Layout do repositório" abaixo)
 - **Ambiente Python:** `.venv/` no projeto, Python 3.11, PyTorch 2.4.1 **CPU** + timm 1.0.11 + MONAI 1.3.2 (ver `requirements.txt`).
 - **Hardware:** aluno tem RX6600 (AMD). Em Windows o suporte de PyTorch para AMD é limitado (DirectML experimental; ROCm é só Linux e nem suporta a 6600). **Decisão: EDA e dev em CPU local; treino do baseline e modelos em Colab (T4/A100).**
-- **EDA executada (2026-05-10):** outputs em `results/eda/` (manifest.csv com 86.437 linhas, summary.json, eda_report.md, 7 figuras incluindo `image_layout.png`).
-- **Próximo passo imediato:** implementar `src/data/splits.py` (split estratificado por subject ID) e `src/data/dataset.py` (Dataset + DataLoader PyTorch com resize 224×224 ou 384×384), depois baseline ResNet-50.
+- **EDA executada (2026-05-10):** outputs em `results/eda/` (manifest.csv com 86.437 linhas, summary.json, eda_report.md, 7 figuras).
+- **Split por paciente executado (2026-05-10):** `src/data/splits.py` produz `experiments/splits/split_v1.json` reprodutível (seed=42, 70/15/15, estratificado por class_3). 242 train / 52 val / 53 test sujeitos; proporções dentro de ~1% da distribuição global em todas as classes. Validações automáticas (sets disjuntos, cobertura de classes) passaram.
+- **Próximo passo imediato:** implementar `src/data/dataset.py` (Dataset + DataLoader PyTorch consumindo `split_v1.json`, resize 224×224 squash, normalização ImageNet, augmentations leves no train), depois baseline ResNet-50.
 
 ## Base de dados — versão Kaggle pré-processada (mudança importante)
 
@@ -114,7 +115,8 @@ TCC/
 │   ├── training/            # loops de treino
 │   ├── interpretability/    # attention rollout, gradcam
 │   └── evaluation/          # métricas, statistical tests (McNemar)
-├── experiments/             # configs, splits versionados, logs de cada run
+├── experiments/
+│   └── splits/              # splits versionados (split_v1.json, ...) — commitar; configs e logs de runs entram aqui também
 ├── results/
 │   └── eda/                 # manifest.csv, summary.json, eda_report.md, figures/
 ├── docs/
