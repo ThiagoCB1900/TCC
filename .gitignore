@@ -1,6 +1,14 @@
 # OASIS bruto e dados processados — nunca commitar (volume + dados sensíveis de pacientes)
-data/
+# IMPORTANTE: usar barra inicial para ancorar à raiz; senão git ignora src/data/ no Windows (case-insensitive)
+/data/
+/Data/
 *.nii
+
+# Trabalho comparativo (CNN/) — manter o .ipynb mas ignorar as imagens do dataset interno (~1.5GB)
+CNN/**/Alzheimer's dataset/
+CNN/**/AugmentedAlzheimerDataset/
+CNN/**/OriginalDataset/
+!CNN/**/*.ipynb
 *.nii.gz
 *.npy
 *.h5
@@ -46,3 +54,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Logs de instalação / setup
+install.log
+*.log

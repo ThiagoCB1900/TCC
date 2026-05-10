@@ -1,0 +1,124 @@
+{
+  "n_slices": 86437,
+  "n_subjects": 347,
+  "n_acquisitions": 1417,
+  "sanity": {
+    "subjects_with_multiple_labels": {},
+    "unique_sessions": [
+      1,
+      2
+    ],
+    "mpr_range": [
+      1,
+      6
+    ],
+    "mpr_unique": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "slice_idx_range_global": [
+      100,
+      160
+    ],
+    "slice_idx_range_by_class": {
+      "mild": [
+        100,
+        160
+      ],
+      "moderate": [
+        100,
+        160
+      ],
+      "non_demented": [
+        100,
+        160
+      ],
+      "very_mild": [
+        100,
+        160
+      ]
+    }
+  },
+  "class_4": [
+    {
+      "class_4": "non_demented",
+      "n_subjects": 266,
+      "n_acquisitions": 1102,
+      "n_slices": 67222,
+      "pct_slices": 77.77,
+      "slices_per_subject_mean": 252.7
+    },
+    {
+      "class_4": "very_mild",
+      "n_subjects": 58,
+      "n_acquisitions": 225,
+      "n_slices": 13725,
+      "pct_slices": 15.88,
+      "slices_per_subject_mean": 236.6
+    },
+    {
+      "class_4": "mild",
+      "n_subjects": 21,
+      "n_acquisitions": 82,
+      "n_slices": 5002,
+      "pct_slices": 5.79,
+      "slices_per_subject_mean": 238.2
+    },
+    {
+      "class_4": "moderate",
+      "n_subjects": 2,
+      "n_acquisitions": 8,
+      "n_slices": 488,
+      "pct_slices": 0.56,
+      "slices_per_subject_mean": 244.0
+    }
+  ],
+  "class_3": [
+    {
+      "class_3": "non_demented",
+      "n_subjects": 266,
+      "n_acquisitions": 1102,
+      "n_slices": 67222,
+      "pct_slices": 77.77,
+      "slices_per_subject_mean": 252.7
+    },
+    {
+      "class_3": "very_mild",
+      "n_subjects": 58,
+      "n_acquisitions": 225,
+      "n_slices": 13725,
+      "pct_slices": 15.88,
+      "slices_per_subject_mean": 236.6
+    },
+    {
+      "class_3": "mild_or_moderate",
+      "n_subjects": 23,
+      "n_acquisitions": 90,
+      "n_slices": 5490,
+      "pct_slices": 6.35,
+      "slices_per_subject_mean": 238.7
+    }
+  ],
+  "class_binary": [
+    {
+      "class_binary": "non_demented",
+      "n_subjects": 266,
+      "n_acquisitions": 1102,
+      "n_slices": 67222,
+      "pct_slices": 77.77,
+      "slices_per_subject_mean": 252.7
+    },
+    {
+      "class_binary": "demented",
+      "n_subjects": 81,
+      "n_acquisitions": 315,
+      "n_slices": 19215,
+      "pct_slices": 22.23,
+      "slices_per_subject_mean": 237.2
+    }
+  ]
+}
