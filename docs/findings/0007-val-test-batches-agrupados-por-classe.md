@@ -43,3 +43,7 @@ Em contraste, train_loader (com `shuffle=True`):
 - `model.eval()` + agregação de previsões em todo o fold é o padrão correto. Eval-on-batch isolado é aproximação debug-only.
 - Se o aluno (ou Claude futuro) implementar uma callback de "amostrar batch durante validação para inspeção", **forçar shuffle nessa amostragem** ou pular para um índice aleatório.
 - Comportamento documentado também no docstring de `src/data/dataset.py` na função `build_dataloaders`.
+
+## Atualização (2026-05-10)
+
+Este finding teve um efeito de segunda ordem detectado no primeiro smoke test do baseline ResNet-50 — quando `max_batches` é aplicado à eval (ex: em smoke test), a combinação com o agrupamento por classe torna a métrica computada inválida (só vê 1 classe). Solução: `build_dataloaders` ganhou `shuffle_eval` que, com seed fixa, distribui classes mantendo determinismo. Detalhes completos em **[F-0010](0010-smoke-test-eval-truncado-bug-corrigido.md)**.

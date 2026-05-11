@@ -223,22 +223,29 @@ def build_dataloaders(
     label_scheme: LabelScheme = "class_3",
     data_root: str | Path = ".",
     image_size: int = DEFAULT_IMAGE_SIZE,
-    batch_size: int = 32,
+    batch_size_train: int = 32,
+    batch_size_eval: int = 64,
     num_workers: int = 0,
     pin_memory: bool = False,
+    shuffle_eval: bool = False,
+    shuffle_eval_seed: int = 42,
 ) -> dict[Fold, DataLoader]:
-    """Constrói os 3 DataLoaders (train/val/test) com a mesma configuração.
+    """Constrói os 3 DataLoaders (train/val/test).
 
     Notas:
-      - shuffle=True só no train; val/test usam ordem determinística.
+      - `shuffle=True` sempre no train; val/test seguem `shuffle_eval`.
+      - `shuffle_eval=False` (default, padrão de avaliação determinística) faz
+        os batches de val/test virem na ordem do manifesto. **Atenção F-0007:**
+        o manifesto está agrupado por classe; quando combinado com avaliação
+        truncada (max_batches) isso pode esconder bugs. **Sempre que truncar
+        eval (ex: smoke test), passar `shuffle_eval=True`** para distribuir
+        as classes nos primeiros batches.
+      - `shuffle_eval` usa um `torch.Generator` com seed fixa: a ordem é
+        embaralhada **uma vez**, e cada época percorre essa mesma ordem
+        embaralhada — preserva determinismo na avaliação completa.
       - Augmentation só no train (default do OASISDataset).
       - num_workers=0 por default para Windows/CPU local; aumentar no Colab.
       - pin_memory=False local; True no Colab com GPU.
-      - **Atenção (F-0007):** os primeiros batches de val/test podem conter
-        apenas uma classe (manifesto ordenado por classe + shuffle=False).
-        Não é bug — métricas agregadas no fold inteiro permanecem corretas.
-        Para sanity-check rápido "modelo vê todas as classes", use train_loader
-        ou itere val_loader algumas dezenas de batches.
     """
     common = dict(
         manifest_path=manifest_path,
@@ -254,10 +261,13 @@ def build_dataloaders(
         "test": OASISDataset(fold="test", **common),
     }
 
+    eval_gen = torch.Generator()
+    eval_gen.manual_seed(shuffle_eval_seed)
+
     loaders: dict[Fold, DataLoader] = {
         "train": DataLoader(
             datasets["train"],
-            batch_size=batch_size,
+            batch_size=batch_size_train,
             shuffle=True,
             num_workers=num_workers,
             pin_memory=pin_memory,
@@ -265,16 +275,18 @@ def build_dataloaders(
         ),
         "val": DataLoader(
             datasets["val"],
-            batch_size=batch_size,
-            shuffle=False,
+            batch_size=batch_size_eval,
+            shuffle=shuffle_eval,
+            generator=eval_gen if shuffle_eval else None,
             num_workers=num_workers,
             pin_memory=pin_memory,
             drop_last=False,
         ),
         "test": DataLoader(
             datasets["test"],
-            batch_size=batch_size,
-            shuffle=False,
+            batch_size=batch_size_eval,
+            shuffle=shuffle_eval,
+            generator=eval_gen if shuffle_eval else None,
             num_workers=num_workers,
             pin_memory=pin_memory,
             drop_last=False,

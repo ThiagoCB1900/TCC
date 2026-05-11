@@ -51,3 +51,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0007](0007-val-test-batches-agrupados-por-classe.md) | Batches de val/test sem shuffle ficam agrupados por classe (não é bug) | Confirmed | 2026-05-10 |
 | [0008](0008-rancom-vit-mesmo-dataset-metodologia-comprometida.md) | RanCom-ViT (Lu 2025) usa o mesmo dataset com metodologia comprometida | Confirmed | 2026-05-10 |
 | [0009](0009-survey-tratamento-desbalanceamento-na-literatura.md) | Como a literatura de ViT+Alzheimer trata desbalanceamento (varredura sistemática) | Confirmed | 2026-05-10 |
+| [0010](0010-smoke-test-eval-truncado-bug-corrigido.md) | Smoke test com eval truncado escondia ausência de classes; corrigido com `shuffle_eval` | Confirmed | 2026-05-10 |

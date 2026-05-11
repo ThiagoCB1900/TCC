@@ -189,6 +189,8 @@ def main(argv: list[str] | None = None) -> int:
     print_summary(datasets)
 
     # Stats em 1 batch do train
+    # (este script constrói loaders ad-hoc para inspeção visual; o uso real
+    # passa por build_dataloaders em src.data.dataset).
     train_loader = DataLoader(
         datasets["train"], batch_size=args.batch_size, shuffle=True, num_workers=0
     )

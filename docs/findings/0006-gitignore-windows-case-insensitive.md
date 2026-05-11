@@ -40,3 +40,11 @@ $ git check-ignore -v Data/
 - **Sempre rodar `git status -u` antes do primeiro commit de uma sessão** — assim untracked dirs aparecem expandidos arquivo por arquivo, expondo silenciosos.
 - Adicional: rodar `git check-ignore -v <caminho>` quando suspeitar que algo deveria estar versionado mas não aparece.
 - Mesma armadilha pode ocorrer com qualquer regra "genérica" no gitignore (`logs/`, `tmp/`, `cache/`, etc.). Auditar todas.
+
+## Re-ocorrência (2026-05-10) — mesma classe de bug com `runs/`
+
+Detectado durante o commit do baseline ResNet-50: a regra `runs/` (sem âncora, originalmente para ignorar `wandb/runs/` etc.) também casava com `experiments/runs/` — o que **silenciosamente ignorava todos os artefatos das runs de treino reais** (config.yaml, history.json, final_test_metrics.json), que **devem ser versionados** para auditoria entre máquinas.
+
+Correção: removida a regra genérica `runs/`; mantidas regras específicas com âncora (`/experiments/runs/*smoke*/` para smokes) e regras de arquivo (`*.pt`, `*.log`). Comentário no `.gitignore` documenta a armadilha.
+
+**Lição reforçada:** auditar todas as regras genéricas. Cada vez que uma nova pasta nomeada existe no projeto (ex: `runs/`, `data/`, `logs/`), revisar se há regra que pode casar inadvertidamente.

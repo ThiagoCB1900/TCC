@@ -14,15 +14,22 @@ CNN/**/OriginalDataset/
 *.h5
 *.hdf5
 
-# Checkpoints e logs de treino
+# Checkpoints e logs de treino — binários, não versionar
 *.pt
 *.pth
 *.ckpt
 experiments/**/checkpoints/
 experiments/**/logs/
-runs/
 wandb/
 mlruns/
+# Atenção: NÃO usar regra genérica `runs/` — ela casa com qualquer pasta
+# `runs/` em qualquer profundidade (Windows case-insensitive, ver F-0006).
+# Em particular ignoraria experiments/runs/ que QUEREMOS versionar
+# (config.yaml, history.json e final_test_metrics.json das runs reais).
+
+# Runs de smoke test (sanity check, não evidência — não versionar)
+/experiments/runs/*_smoke*/
+/experiments/runs/*smoke*/
 
 # Resultados pesados (manter só os finais, escolher manualmente o que commitar)
 results/**/*.png
