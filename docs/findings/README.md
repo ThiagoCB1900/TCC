@@ -52,3 +52,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0008](0008-rancom-vit-mesmo-dataset-metodologia-comprometida.md) | RanCom-ViT (Lu 2025) usa o mesmo dataset com metodologia comprometida | Confirmed | 2026-05-10 |
 | [0009](0009-survey-tratamento-desbalanceamento-na-literatura.md) | Como a literatura de ViT+Alzheimer trata desbalanceamento (varredura sistemática) | Confirmed | 2026-05-10 |
 | [0010](0010-smoke-test-eval-truncado-bug-corrigido.md) | Smoke test com eval truncado escondia ausência de classes; corrigido com `shuffle_eval` | Confirmed | 2026-05-10 |
+| [0011](0011-drive-symlink-i-o-bottleneck-no-colab.md) | Ler `Data/` direto do Drive (symlink) é gargalo severo de I/O no Colab | Confirmed | 2026-05-10 |
