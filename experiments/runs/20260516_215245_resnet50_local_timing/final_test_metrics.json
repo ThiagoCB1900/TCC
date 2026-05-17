@@ -1,0 +1,52 @@
+{
+  "best_epoch": 1,
+  "best_metric_name": "balanced_accuracy",
+  "best_metric_val_value": 0.6546279900738118,
+  "test_loss": 0.8859372626909096,
+  "test_metrics": {
+    "accuracy": 0.629901034977714,
+    "balanced_accuracy": 0.5647436668494731,
+    "macro_f1": 0.4785077429641502,
+    "auc_macro": 0.7878344455139216,
+    "f1_per_class": {
+      "non_demented": 0.7537018464987316,
+      "very_mild": 0.4313865997850233,
+      "mild_or_moderate": 0.25043478260869567
+    },
+    "precision_per_class": {
+      "non_demented": 0.9890075863136708,
+      "very_mild": 0.2867121765359581,
+      "mild_or_moderate": 0.30062630480167013
+    },
+    "recall_per_class": {
+      "non_demented": 0.6088448341593595,
+      "very_mild": 0.8707810993249759,
+      "mild_or_moderate": 0.21460506706408347
+    },
+    "confusion": [
+      [
+        6388,
+        3970,
+        134
+      ],
+      [
+        67,
+        1806,
+        201
+      ],
+      [
+        4,
+        523,
+        144
+      ]
+    ],
+    "class_names": [
+      "non_demented",
+      "very_mild",
+      "mild_or_moderate"
+    ],
+    "n_samples": 13237
+  },
+  "total_training_time_seconds": 10054.263647317886,
+  "checkpoint_best": "experiments\\runs\\20260516_215245_resnet50_local_timing\\checkpoint_best.pt"
+}

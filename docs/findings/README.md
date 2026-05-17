@@ -53,3 +53,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0009](0009-survey-tratamento-desbalanceamento-na-literatura.md) | Como a literatura de ViT+Alzheimer trata desbalanceamento (varredura sistemática) | Confirmed | 2026-05-10 |
 | [0010](0010-smoke-test-eval-truncado-bug-corrigido.md) | Smoke test com eval truncado escondia ausência de classes; corrigido com `shuffle_eval` | Confirmed | 2026-05-10 |
 | [0011](0011-drive-symlink-i-o-bottleneck-no-colab.md) | Ler `Data/` direto do Drive (symlink) é gargalo severo de I/O no Colab | Confirmed | 2026-05-10 |
+| [0012](0012-kaggle-notebooks-resolve-i-o-do-drive.md) | Kaggle Notebooks resolve nativamente o gargalo de I/O do F-0011 | Confirmed | 2026-05-10 |

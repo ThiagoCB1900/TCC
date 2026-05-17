@@ -1,7 +1,7 @@
 # ADR-0003 — Treino no Colab, dev local em CPU (RX6600 não viável)
 
 - **Data:** 2026-05-10
-- **Status:** Accepted
+- **Status:** **Superseded by [ADR-0009](0009-kaggle-notebooks-como-ambiente-primario-de-treino.md)** — Kaggle Notebooks virou primário (resolve F-0011); Colab continua como backup viável após o fix do `Data.zip → /content/`.
 - **Decisores:** Thiago, Claude
 
 ## Contexto

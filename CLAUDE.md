@@ -19,7 +19,7 @@
 - **Fase:** Semana 1 · Fundação · ambiente configurado, EDA em execução
 - **Estrutura de pastas criada:** sim (ver "Layout do repositório" abaixo)
 - **Ambiente Python:** `.venv/` no projeto, Python 3.11, PyTorch 2.4.1 **CPU** + timm 1.0.11 + MONAI 1.3.2 (ver `requirements.txt`).
-- **Hardware:** aluno tem RX6600 (AMD). Em Windows o suporte de PyTorch para AMD é limitado (DirectML experimental; ROCm é só Linux e nem suporta a 6600). **Decisão: EDA e dev em CPU local; treino do baseline e modelos em Colab (T4/A100).**
+- **Hardware:** aluno tem RX6600 (AMD). Em Windows o suporte de PyTorch para AMD é limitado (DirectML experimental; ROCm é só Linux e nem suporta a 6600). **Decisão (ADR-0009): EDA e dev em CPU local; treino do baseline e modelos no Kaggle Notebooks (T4/P100 gratuita com dataset OASIS-Kaggle já hospedado em SSD local). Colab é backup após fix do F-0011.**
 - **EDA executada (2026-05-10):** outputs em `results/eda/` (manifest.csv com 86.437 linhas, summary.json, eda_report.md, 7 figuras).
 - **Split por paciente executado (2026-05-10):** `src/data/splits.py` produz `experiments/splits/split_v1.json` reprodutível (seed=42, 70/15/15, estratificado por class_3). 242 train / 52 val / 53 test sujeitos; proporções dentro de ~1% da distribuição global em todas as classes. Validações automáticas (sets disjuntos, cobertura de classes) passaram.
 - **Dataset PyTorch implementado (2026-05-10):** `src/data/dataset.py` com `OASISDataset` (lê manifesto + split JSON, filtra por fold, label encoding por severidade clínica) + `build_dataloaders`. Pipeline: resize 224×224 squash + ImageNet norm + augmentations leves só no train (flip horizontal, rotação ±5°, jitter brilho/contraste). Validado em `src/data/inspect_dataset.py` com inspeção visual em `results/eda/figures/dataset_inspection.png` e `dataset_augmentation_check.png` — checkpoint anti-erro motivado por F-0003.
@@ -28,7 +28,8 @@
 - **Notebook Colab criado (2026-05-10):** `notebooks/01_resnet50_baseline_colab.ipynb` executa todo o protocolo (Drive → clone → symlinks → smoke → treino com peso → treino sem peso → análise). Protocolo documentado em `notebooks/README.md`. Outputs persistidos em `MyDrive/TCC/runs/` via symlink, sobrevivem a queda de sessão.
 - **Tentativa de treino no Colab gratuito falhou (2026-05-10):** smoke test OK no T4, mas treino completo não completou nem 1 epoch antes de esgotar cota de unidades computacionais. Causa diagnosticada em F-0011: `Data/` lido via symlink direto do Drive ⇒ 60k chamadas FUSE individuais/epoch ⇒ I/O domina ⇒ GPU fica idle queimando cota. **Notebook 01 precisa ser corrigido** (copiar `Data.zip` para `/content/Data/` no início da sessão).
 - **Notebook local para timing criado (2026-05-10):** `notebooks/02_resnet50_local_cpu_timing.ipynb` mede tempo real de 1 epoch em CPU local enquanto cota Colab restaura. Inclui calibração de 3 batches que estima total antes de comprometer horas.
-- **Próximo passo imediato:** aluno roda notebook 02 para ter tempo concreto de CPU local; com o número em mãos decide entre (a) rodar treino completo local, (b) esperar Colab restaurar e usar notebook 01 corrigido, (c) considerar Colab Pro.
+- **Mudança de ambiente primário (2026-05-10, ADR-0009):** aluno sugeriu Kaggle Notebooks. Análise (F-0012) confirma — dataset `ninadaithal/imagesoasis` já hospedado lá em SSD local da sessão (sem FUSE), GPU T4/P100 com 30h/semana, cota explícita. `notebooks/03_resnet50_baseline_kaggle.ipynb` é o novo primário; notebook 01 (Colab) ganha banner apontando pro 03.
+- **Próximo passo imediato:** aluno abre notebook 03 no Kaggle (`+ Add Input` do dataset OASIS, `Settings → GPU` e `Internet → On`), executa célula a célula, valida que o dataset Kaggle bate exatamente com nosso manifest, roda smoke + treino weighted + ablação sem peso, baixa `runs_to_commit.zip` para commitar localmente.
 
 ## Base de dados — versão Kaggle pré-processada (mudança importante)
 
@@ -65,7 +66,7 @@ A base original do plano era OASIS-1 bruto (NIfTI 3D + scripts FSL/BET). O aluno
 | Versão do OASIS | OASIS-1 (Kaggle pré-processado, 2D JPG) | **fixado** | F-0001/F-0002 |
 | Esquema de classes | **3 classes:** Non Demented / Very mild / Mild+Moderate (fundidos) | fixado · confirmar com orientador | [ADR-0001](docs/decisions/0001-esquema-de-classes-3-classes.md) |
 | Split | Estratificado por subject ID, 70/15/15, seed fixa | **fixado** | [ADR-0002](docs/decisions/0002-split-estratificado-por-paciente.md) |
-| Hardware de treino | Colab (T4 grátis ou Pro) — local apenas para dev | **fixado** | [ADR-0003](docs/decisions/0003-hardware-colab-para-treino.md) |
+| Hardware de treino | **Kaggle Notebooks** (T4 grátis, dataset nativo); Colab/local como backups | **fixado** | [ADR-0009](docs/decisions/0009-kaggle-notebooks-como-ambiente-primario-de-treino.md) (substitui ADR-0003) |
 | Pré-processamento | Resize squash 224×224, RGB sintético mantido | **fixado** | [ADR-0004](docs/decisions/0004-preprocessamento-resize-224.md) |
 | Métricas primárias | macro-F1, balanced accuracy, AUC, McNemar | **fixado** | [ADR-0005](docs/decisions/0005-metricas-primarias.md) |
 | Augmentations + label encoding | Flip H + rot ±5° + jitter leve só no train; classes 0=non, 1=very_mild, 2=mild_or_moderate | **fixado** | [ADR-0006](docs/decisions/0006-dataset-augmentations-e-label-encoding.md) |
