@@ -36,6 +36,37 @@ from src.training.config import TrainConfig
 # Pesos de classe (ADR-0007)
 # ---------------------------------------------------------------------------
 
+def make_param_groups(
+    model: torch.nn.Module,
+    lr_head: float,
+    lr_backbone: float,
+    weight_decay: float,
+) -> list[dict]:
+    """Separa parâmetros do classifier head dos do backbone para LR diferenciado.
+
+    ADR-0010: backbone pretrained ImageNet só precisa ajuste fino; head reinicializado
+    precisa aprender do zero. Usa `model.get_classifier()` que timm padroniza para
+    qualquer arquitetura (ResNet, ViT, Swin) — identifica o head por identidade do
+    tensor de parâmetro (`id`), robusto a renomeações.
+    """
+    classifier_ids = {id(p) for p in model.get_classifier().parameters()}
+    head: list[torch.nn.Parameter] = []
+    backbone: list[torch.nn.Parameter] = []
+    for p in model.parameters():
+        if not p.requires_grad:
+            continue
+        (head if id(p) in classifier_ids else backbone).append(p)
+    if not head:
+        raise RuntimeError(
+            "make_param_groups: nenhum parâmetro identificado como classifier head. "
+            "Verifique `model.get_classifier()` da arquitetura."
+        )
+    return [
+        {"params": backbone, "lr": lr_backbone, "weight_decay": weight_decay},
+        {"params": head, "lr": lr_head, "weight_decay": weight_decay},
+    ]
+
+
 def compute_class_weights(train_loader: DataLoader, num_classes: int) -> torch.Tensor:
     """Calcula pesos 'balanced' (sklearn formula) sobre o split de treino.
 
@@ -223,10 +254,29 @@ def fit(
     )
 
     # --- Optimizer ---
+    # ADR-0010: se lr_head e lr_backbone foram especificados, usa LR diferenciado
+    # via param_groups. Caso contrario, usa lr uniforme (compatibilidade V1).
+    use_differentiated_lr = cfg.lr_head is not None and cfg.lr_backbone is not None
+
     if cfg.optimizer == "adamw":
-        optimizer = torch.optim.AdamW(
-            model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay
-        )
+        if use_differentiated_lr:
+            param_groups = make_param_groups(
+                model, cfg.lr_head, cfg.lr_backbone, cfg.weight_decay
+            )
+            optimizer = torch.optim.AdamW(param_groups)
+            log(
+                f"LR diferenciado (ADR-0010): backbone={cfg.lr_backbone}, "
+                f"head={cfg.lr_head}, weight_decay={cfg.weight_decay}"
+            )
+            log(
+                f"  parametros backbone: {sum(p.numel() for p in param_groups[0]['params']):,}, "
+                f"head: {sum(p.numel() for p in param_groups[1]['params']):,}"
+            )
+        else:
+            optimizer = torch.optim.AdamW(
+                model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay
+            )
+            log(f"LR uniforme (V1): lr={cfg.lr}, weight_decay={cfg.weight_decay}")
     elif cfg.optimizer == "sgd":
         optimizer = torch.optim.SGD(
             model.parameters(),

@@ -59,28 +59,33 @@ DEFAULT_IMAGE_SIZE = 224
 
 # --- Transforms -------------------------------------------------------------
 
+AugmentStrength = Literal["off", "light", "strong"]
+
+
 @dataclass(frozen=True)
 class TransformConfig:
     """Configuração de transforms por fold."""
 
     image_size: int = DEFAULT_IMAGE_SIZE
-    augment: bool = False  # True só para o fold de treino
+    augment: AugmentStrength = "off"
 
 
 def build_transform(cfg: TransformConfig) -> T.Compose:
-    """Pipeline determinístico (val/test) ou com augmentation leve (train).
+    """Pipeline determinístico ('off') ou com augmentation leve ('light', V1) ou
+    forte ('strong', V2 — ADR-0010).
 
     Ordem importa:
       1. Resize squash para garantir tamanho fixo (deformação horizontal aceita;
-         ver ADR-0004).
+         ADR-0004).
       2. Augmentations geométricas/colorimétricas, se aplicável (train apenas;
-         ver ADR-0006).
+         ADR-0006 / ADR-0010).
       3. ToImage + ToDtype para tensor float32 em [0,1].
       4. Normalize ImageNet — última etapa, sempre.
     """
     steps: list = [T.Resize((cfg.image_size, cfg.image_size), antialias=True)]
 
-    if cfg.augment:
+    if cfg.augment == "light":
+        # V1 — ADR-0006
         steps.extend(
             [
                 T.RandomHorizontalFlip(p=0.5),
@@ -88,6 +93,17 @@ def build_transform(cfg: TransformConfig) -> T.Compose:
                 T.ColorJitter(brightness=0.1, contrast=0.1),
             ]
         )
+    elif cfg.augment == "strong":
+        # V2 — ADR-0010: combate overfit observado em F-0013
+        steps.extend(
+            [
+                T.RandomHorizontalFlip(p=0.5),
+                T.RandomRotation(degrees=15, fill=0),
+                T.RandomAffine(degrees=0, translate=(0.05, 0.05), fill=0),
+                T.ColorJitter(brightness=0.2, contrast=0.2),
+            ]
+        )
+    # "off" → sem augmentation (val/test sempre, ou train se explicitamente desligado)
 
     steps.extend(
         [
@@ -118,7 +134,7 @@ class OASISDataset(Dataset):
         label_scheme: LabelScheme = "class_3",
         data_root: str | Path = ".",
         image_size: int = DEFAULT_IMAGE_SIZE,
-        augment: bool | None = None,
+        augment_strength: AugmentStrength | None = None,
     ) -> None:
         super().__init__()
 
@@ -179,10 +195,15 @@ class OASISDataset(Dataset):
         self.fold = fold
         self.label_scheme = label_scheme
 
-        # Augmentation: por default, ligado se fold=='train'; pode ser sobrescrito.
-        if augment is None:
-            augment = fold == "train"
-        self.transform = build_transform(TransformConfig(image_size=image_size, augment=augment))
+        # Augmentation: default "strong" se fold=='train' (ADR-0010), "off" caso
+        # contrario. Pode ser sobrescrito por argumento explicito (qualquer dos
+        # tres niveis: "off" | "light" | "strong").
+        if augment_strength is None:
+            augment_strength = "strong" if fold == "train" else "off"
+        self.augment_strength = augment_strength
+        self.transform = build_transform(
+            TransformConfig(image_size=image_size, augment=augment_strength)
+        )
 
     # ------------------------- API PyTorch -------------------------
 
@@ -229,6 +250,7 @@ def build_dataloaders(
     pin_memory: bool = False,
     shuffle_eval: bool = False,
     shuffle_eval_seed: int = 42,
+    train_augment_strength: AugmentStrength = "strong",
 ) -> dict[Fold, DataLoader]:
     """Constrói os 3 DataLoaders (train/val/test).
 
@@ -256,9 +278,9 @@ def build_dataloaders(
     )
 
     datasets: dict[Fold, OASISDataset] = {
-        "train": OASISDataset(fold="train", **common),
-        "val": OASISDataset(fold="val", **common),
-        "test": OASISDataset(fold="test", **common),
+        "train": OASISDataset(fold="train", augment_strength=train_augment_strength, **common),
+        "val": OASISDataset(fold="val", augment_strength="off", **common),
+        "test": OASISDataset(fold="test", augment_strength="off", **common),
     }
 
     eval_gen = torch.Generator()

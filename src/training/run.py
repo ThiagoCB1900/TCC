@@ -63,10 +63,20 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--epochs", type=int, default=20)
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--batch-size-eval", type=int, default=64)
-    p.add_argument("--lr", type=float, default=1e-4)
-    p.add_argument("--weight-decay", type=float, default=0.05)
+    # LR: --lr define lr uniforme (V1 compat). --lr-head e --lr-backbone definem LR
+    # diferenciado (V2, ADR-0010). Se ambos passados, prevalecem sobre --lr.
+    p.add_argument("--lr", type=float, default=1e-4, help="LR uniforme (V1, fallback).")
+    p.add_argument("--lr-head", type=float, default=1e-4, help="LR do classifier head (ADR-0010).")
+    p.add_argument("--lr-backbone", type=float, default=1e-5, help="LR do backbone (ADR-0010).")
+    p.add_argument("--uniform-lr", action="store_true",
+                   help="Forca LR uniforme (V1): ignora --lr-head/--lr-backbone, usa --lr.")
+    p.add_argument("--weight-decay", type=float, default=0.1, help="ADR-0010 (V1 era 0.05).")
+    p.add_argument("--warmup-epochs", type=int, default=2, help="ADR-0010 (V1 era 1).")
+    p.add_argument("--drop-rate", type=float, default=0.3, help="Dropout no head (ADR-0010; V1 era 0).")
+    p.add_argument("--augment", choices=["light", "strong"], default="strong",
+                   help="Augmentation no train (ADR-0010; V1='light', V2='strong').")
     p.add_argument("--num-workers", type=int, default=0)
-    p.add_argument("--patience", type=int, default=3)
+    p.add_argument("--patience", type=int, default=5, help="Early stopping (ADR-0010; V1 era 3).")
     p.add_argument("--smoke", action="store_true", help="Smoke test: 2 epochs, 50 batches.")
     p.add_argument("--smoke-batches", type=int, default=50)
     p.add_argument("--output-dir", default="experiments/runs")
@@ -79,6 +89,10 @@ def main() -> int:
 
     n_classes = 3 if args.label_scheme == "class_3" else 2
 
+    # ADR-0010: LR diferenciado por padrao; --uniform-lr volta ao comportamento V1.
+    lr_head_eff = None if args.uniform_lr else args.lr_head
+    lr_backbone_eff = None if args.uniform_lr else args.lr_backbone
+
     cfg = TrainConfig(
         run_name=args.run_name or f"resnet50_{args.label_scheme}_{'weighted' if not args.no_class_weights else 'noweight'}",
         seed=args.seed,
@@ -89,14 +103,19 @@ def main() -> int:
         image_size=args.image_size,
         model_name="resnet50",
         pretrained=True,
+        drop_rate=args.drop_rate,
         use_class_weights=not args.no_class_weights,
         optimizer="adamw",
         lr=args.lr,
+        lr_head=lr_head_eff,
+        lr_backbone=lr_backbone_eff,
         weight_decay=args.weight_decay,
+        warmup_epochs=args.warmup_epochs,
         epochs=args.epochs,
         batch_size_train=args.batch_size,
         batch_size_eval=args.batch_size_eval,
         num_workers=args.num_workers,
+        augment_strength=args.augment,
         early_stopping_patience=args.patience,
         smoke_test=args.smoke,
         smoke_max_batches_per_epoch=args.smoke_batches,
@@ -128,6 +147,7 @@ def main() -> int:
         batch_size_eval=cfg.batch_size_eval,
         num_workers=cfg.num_workers,
         pin_memory=cfg.pin_memory,
+        train_augment_strength=cfg.augment_strength,
         # Em smoke test, distribuir classes nos primeiros batches para o
         # max_batches da eval não esconder bugs (F-0007 + lição F-0010).
         shuffle_eval=cfg.smoke_test,
@@ -138,9 +158,11 @@ def main() -> int:
     print(f"Classes (idx ordenado): {class_names}")
 
     # --- Modelo ---
-    print(f"Construindo modelo {cfg.model_name} (pretrained={cfg.pretrained})...")
+    print(f"Construindo modelo {cfg.model_name} (pretrained={cfg.pretrained}, drop_rate={cfg.drop_rate})...")
     if cfg.model_name == "resnet50":
-        model, model_info = build_resnet50(num_classes=n_classes, pretrained=cfg.pretrained)
+        model, model_info = build_resnet50(
+            num_classes=n_classes, pretrained=cfg.pretrained, drop_rate=cfg.drop_rate
+        )
     else:
         raise NotImplementedError(f"model {cfg.model_name} ainda nao implementado")
 

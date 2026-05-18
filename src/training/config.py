@@ -34,23 +34,27 @@ class TrainConfig:
     label_scheme: LabelScheme = "class_3"
     image_size: int = 224
 
-    # --- Modelo (ADR-0008) ---
+    # --- Modelo (ADR-0008 + ADR-0010) ---
     model_name: ModelName = "resnet50"
     pretrained: bool = True
+    drop_rate: float = 0.3  # ADR-0010: dropout no classifier head (V1 era 0.0)
 
     # --- Loss (ADR-0007) ---
     use_class_weights: bool = True  # ablação: False = sem peso
     label_smoothing: float = 0.0  # extra ablation
 
-    # --- Optimizer (ADR-0008) ---
+    # --- Optimizer (ADR-0008 + ADR-0010) ---
     optimizer: Literal["adamw", "sgd"] = "adamw"
-    lr: float = 1e-4
-    weight_decay: float = 0.05
+    lr: float = 1e-4  # fallback se lr_head/lr_backbone forem None (V1)
+    # ADR-0010: LR diferenciado por grupo. Se ambos None -> usa `lr` uniforme.
+    lr_head: float | None = 1e-4
+    lr_backbone: float | None = 1e-5
+    weight_decay: float = 0.1  # ADR-0010 (V1 era 0.05)
     momentum: float = 0.9  # usado se optimizer=sgd
 
-    # --- Scheduler (ADR-0008) ---
+    # --- Scheduler (ADR-0008 + ADR-0010) ---
     scheduler: Literal["cosine", "constant"] = "cosine"
-    warmup_epochs: int = 1
+    warmup_epochs: int = 2  # ADR-0010 (V1 era 1)
 
     # --- Loop (ADR-0008) ---
     epochs: int = 20
@@ -61,9 +65,12 @@ class TrainConfig:
     grad_clip_max_norm: float = 1.0
     mixed_precision: bool = False  # off em CPU; True em Colab GPU
 
-    # --- Early stopping (ADR-0008) ---
+    # --- Dataset (ADR-0006 + ADR-0010) ---
+    augment_strength: Literal["light", "strong"] = "strong"  # ADR-0010: "strong" no V2
+
+    # --- Early stopping (ADR-0008 + ADR-0010) ---
     early_stopping_metric: Literal["balanced_accuracy", "macro_f1", "val_loss"] = "balanced_accuracy"
-    early_stopping_patience: int = 3
+    early_stopping_patience: int = 5  # ADR-0010 (V1 era 3)
     early_stopping_min_delta: float = 1e-4
 
     # --- Smoke test (opcional) ---
