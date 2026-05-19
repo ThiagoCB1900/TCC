@@ -56,3 +56,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0012](0012-kaggle-notebooks-resolve-i-o-do-drive.md) | Kaggle Notebooks resolve nativamente o gargalo de I/O do F-0011 | Confirmed | 2026-05-10 |
 | [0013](0013-baseline-v1-overfit-rapido-weighted-validado.md) | Baseline V1: weighted CE validado, mas overfit catastrófico em 4 epochs | Confirmed | 2026-05-17 |
 | [0014](0014-auditoria-mestre-split-por-paciente-nos-trabalhos.md) | Auditoria-mestre: split por paciente nos trabalhos relacionados (alicerce do TCC) | Confirmed | 2026-05-17 |
+| [0015](0015-mapa-de-posicionamento-e-gap-na-literatura.md) | Mapa de posicionamento: métricas, oponente direto (RanCom-ViT) e o gap (ViT+OASIS+split por paciente) | Confirmed | 2026-05-17 |
