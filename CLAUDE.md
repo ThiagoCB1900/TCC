@@ -183,6 +183,8 @@ Dois trabalhos serão usados como comparativos diretos no TCC:
 
 Ambos os trabalhos são casos de estudo de prática não-rigorosa que justificam empiricamente nossas escolhas metodológicas. **Não almejar superar os 99,54% do RanCom-ViT** — é artefato metodológico. Nossa baseline será comparada principalmente com **ela mesma** (ablações: com vs sem weighted loss, com vs sem augmentation).
 
+**Auditoria-mestre de split por paciente (2026-05-17, F-0014):** leitura integral dos 14 PDFs + auditoria do dataset uraninjo (scripts `src/data/extract_paper_texts.py` e `src/data/audit_cnn_dataset.py`). Quadro: **(a) trabalhos rigorosos fazem split por paciente** — Leveraging Swin, VGG-TSwinformer e Vision-ViT-CNN afirmam isso textualmente, e o Leveraging Swin **critica explicitamente** random splits ("evaluation design can inflate headline metrics"); **(b) RanCom-ViT** (mesmo dataset que nós) faz split por slice → 99,54% inflado; **(c) Joint Transformer** faz split por volume mas não controla leakage longitudinal (ADNI); **(d) dataset uraninjo (CNN do aluno) torna split por paciente IMPOSSÍVEL** — sem subject ID, EXIF vazio, prefixo numérico repetido entre classes. A tese do TCC é nuançada: não "todos erram", mas "os rigorosos fazem split por paciente; quem usa o nosso dataset ou datasets sem ID, não". Nosso diferencial: split por paciente rigoroso no OASIS-Kaggle.
+
 A pasta `CNN/.../Alzheimer's dataset/` contém ~40k imagens (~1.5GB). **Imagens ignoradas no `.gitignore`**, mas o `.ipynb` permanece versionado como fonte primária. Não modificar conteúdo da pasta — é fonte primária.
 
 ## Princípios operacionais

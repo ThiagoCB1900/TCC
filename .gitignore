@@ -65,3 +65,6 @@ Thumbs.db
 # Logs de instalação / setup
 install.log
 *.log
+
+# Textos de PDF extraídos para auditoria (regeneráveis via src/data/extract_paper_texts.py)
+_paper_texts/
