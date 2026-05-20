@@ -165,6 +165,8 @@ TCC/
 
 Toda **decisão metodológica** (split, classes, métricas, modelo, preprocessing, hardware...) vai como ADR em `docs/decisions/NNNN-titulo.md`. Toda **descoberta factual auditada** (estrutura do dataset, comportamento de imagem, achado em trabalho relacionado, anomalia) vai como Finding em `docs/findings/NNNN-titulo.md`. Os índices ficam nos READMEs respectivos.
 
+**FAQ de defesa:** `docs/faq-defesa-banca.md` reúne respostas curtas e defensáveis para as perguntas conceituais mais prováveis na banca (balanceamento, augmentation/leakage, métricas, split por paciente, 3 classes, OASIS vs ADNI, etc.), cada uma ancorada no ADR/Finding correspondente. Atualizar quando surgir nova decisão relevante.
+
 **Regra:** este `CLAUDE.md` é o **mapa**, não o **território**. Detalhes profundos vão para ADRs/Findings; o CLAUDE.md mantém apenas o resumo executivo e ponteiros. Quando houver conflito ou questão sobre "por que decidimos X", o ADR/Finding correspondente é a fonte canônica.
 
 **Para o Claude Code (instruções de manutenção):**
