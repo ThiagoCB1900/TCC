@@ -59,3 +59,4 @@ Optamos por **X**. Justificativa em 2-4 linhas, ancorada em literatura, dados ou
 | [0008](0008-framework-treino-pytorch-puro.md) | Framework de treino: PyTorch puro com torchmetrics + YAML (sem Lightning) | Accepted | 2026-05-10 |
 | [0009](0009-kaggle-notebooks-como-ambiente-primario-de-treino.md) | Kaggle Notebooks como ambiente primário de treino (substitui ADR-0003) | Accepted | 2026-05-10 |
 | [0010](0010-baseline-v2-hiperparametros-anti-overfit.md) | Baseline V2: LR diferenciado + dropout + augmentation forte para combater overfit (refina ADR-0008) | Accepted | 2026-05-17 |
+| [0011](0011-pipeline-de-dados-definitivo.md) | Pipeline de dados definitivo (consolida 0002/0004/0005/0006/0007 + ablações + regras de ouro) | Accepted | 2026-05-17 |
