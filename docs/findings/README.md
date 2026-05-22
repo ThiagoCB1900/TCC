@@ -58,3 +58,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0014](0014-auditoria-mestre-split-por-paciente-nos-trabalhos.md) | Auditoria-mestre: split por paciente nos trabalhos relacionados (alicerce do TCC) | Confirmed | 2026-05-17 |
 | [0015](0015-mapa-de-posicionamento-e-gap-na-literatura.md) | Mapa de posicionamento: métricas, oponente direto (RanCom-ViT) e o gap (ViT+OASIS+split por paciente) | Confirmed | 2026-05-17 |
 | [0016](0016-praticas-de-preprocessamento-balanceamento-augmentation.md) | Práticas de pré-proc/balanceamento/augmentation (papers + best-practices); balanceamento só no treino | Confirmed | 2026-05-17 |
+| [0017](0017-baseline-v2-overfit-controlado-teto-resnet.md) | Baseline V2: overfit controlado, mas teto do ResNet-50 em ~0,59-0,62 balanced_acc | Confirmed | 2026-05-22 |
