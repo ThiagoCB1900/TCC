@@ -395,6 +395,25 @@ def fit(
     log("Metricas finais no TEST:")
     log(format_metrics_table(test_result))
 
+    # Persiste predições por amostra no test (para McNemar entre modelos — ADR-0005).
+    # test_loader é determinístico (shuffle=False), então a ordem das amostras é a
+    # mesma entre runs/modelos sobre o mesmo split — permite comparação par-a-par.
+    if not cfg.smoke_test:
+        try:
+            y_true, y_pred, y_proba = collect_predictions(model, loaders["test"], device)
+            test_ds = loaders["test"].dataset
+            np.savez_compressed(
+                run_dir / "test_predictions.npz",
+                y_true=y_true,
+                y_pred=y_pred,
+                y_proba=y_proba,
+                subjects=getattr(test_ds, "_subjects", np.array([])),
+                class_names=np.array(class_names),
+            )
+            log(f"Predicoes do test salvas em {run_dir / 'test_predictions.npz'} (para McNemar).")
+        except Exception as e:  # noqa: BLE001 — persistência não deve derrubar a run
+            log(f"[AVISO] falha ao salvar predicoes do test: {e}")
+
     final = {
         "best_epoch": best_epoch,
         "best_metric_name": cfg.early_stopping_metric,

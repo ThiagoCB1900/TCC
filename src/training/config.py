@@ -14,6 +14,7 @@ import yaml
 
 LabelScheme = Literal["class_3", "class_binary"]
 ModelName = Literal["resnet50", "vit_base_16", "swin_tiny"]
+# (mantido em sincronia com src.models.factory.MODEL_NAMES)
 
 
 @dataclass
@@ -34,10 +35,11 @@ class TrainConfig:
     label_scheme: LabelScheme = "class_3"
     image_size: int = 224
 
-    # --- Modelo (ADR-0008 + ADR-0010) ---
+    # --- Modelo (ADR-0008 + ADR-0010 + ADR-0012) ---
     model_name: ModelName = "resnet50"
     pretrained: bool = True
     drop_rate: float = 0.3  # ADR-0010: dropout no classifier head (V1 era 0.0)
+    drop_path_rate: float = 0.1  # ADR-0012: stochastic depth (só ViT/Swin; ResNet ignora)
 
     # --- Loss (ADR-0007) ---
     use_class_weights: bool = True  # ablação: False = sem peso

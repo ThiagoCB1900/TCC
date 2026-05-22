@@ -28,7 +28,7 @@ import numpy as np
 import torch
 
 from src.data.dataset import build_dataloaders
-from src.models.resnet import build_resnet50
+from src.models.factory import MODEL_NAMES, build_model
 from src.training.config import TrainConfig
 from src.training.loop import fit
 
@@ -53,6 +53,10 @@ def get_git_commit() -> str:
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--run-name", default=None, help="Nome base da run; default deriva de config.")
+    p.add_argument("--model", choices=list(MODEL_NAMES), default="resnet50",
+                   help="Arquitetura: resnet50 | vit_base_16 | swin_tiny (ADR-0012).")
+    p.add_argument("--drop-path-rate", type=float, default=0.1,
+                   help="Stochastic depth (so ViT/Swin; ResNet ignora).")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--manifest", default="results/eda/manifest.csv")
     p.add_argument("--split", default="experiments/splits/split_v1.json")
@@ -94,16 +98,17 @@ def main() -> int:
     lr_backbone_eff = None if args.uniform_lr else args.lr_backbone
 
     cfg = TrainConfig(
-        run_name=args.run_name or f"resnet50_{args.label_scheme}_{'weighted' if not args.no_class_weights else 'noweight'}",
+        run_name=args.run_name or f"{args.model}_{args.label_scheme}_{'weighted' if not args.no_class_weights else 'noweight'}",
         seed=args.seed,
         manifest_path=args.manifest,
         split_path=args.split,
         data_root=args.data_root,
         label_scheme=args.label_scheme,
         image_size=args.image_size,
-        model_name="resnet50",
+        model_name=args.model,
         pretrained=True,
         drop_rate=args.drop_rate,
+        drop_path_rate=args.drop_path_rate,
         use_class_weights=not args.no_class_weights,
         optimizer="adamw",
         lr=args.lr,
@@ -157,14 +162,17 @@ def main() -> int:
     class_names = list(loaders["train"].dataset.class_to_idx.keys())  # type: ignore[attr-defined]
     print(f"Classes (idx ordenado): {class_names}")
 
-    # --- Modelo ---
-    print(f"Construindo modelo {cfg.model_name} (pretrained={cfg.pretrained}, drop_rate={cfg.drop_rate})...")
-    if cfg.model_name == "resnet50":
-        model, model_info = build_resnet50(
-            num_classes=n_classes, pretrained=cfg.pretrained, drop_rate=cfg.drop_rate
-        )
-    else:
-        raise NotImplementedError(f"model {cfg.model_name} ainda nao implementado")
+    # --- Modelo (factory, ADR-0012) ---
+    print(f"Construindo modelo {cfg.model_name} (pretrained={cfg.pretrained}, "
+          f"drop_rate={cfg.drop_rate}, drop_path_rate={cfg.drop_path_rate})...")
+    model, model_info = build_model(
+        cfg.model_name,
+        num_classes=n_classes,
+        pretrained=cfg.pretrained,
+        drop_rate=cfg.drop_rate,
+        drop_path_rate=cfg.drop_path_rate,
+    )
+    print(f"  params treinaveis: {model_info['num_params']:,}")
 
     device = torch.device(cfg.device)
     model = model.to(device)

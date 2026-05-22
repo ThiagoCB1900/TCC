@@ -75,8 +75,8 @@ A base original do plano era OASIS-1 bruto (NIfTI 3D + scripts FSL/BET). O aluno
 | Augmentations + label encoding | Flip H + rot ±5° + jitter leve só no train; classes 0=non, 1=very_mild, 2=mild_or_moderate | **fixado** | [ADR-0006](docs/decisions/0006-dataset-augmentations-e-label-encoding.md) |
 | Tratamento de desbalanceamento | Weighted CE 'balanced' (sklearn) com ablação sem peso | **fixado** | [ADR-0007](docs/decisions/0007-tratamento-de-desbalanceamento.md) |
 | Pipeline de dados (consolidado) | Split paciente → aug train-only → resize 224 squash → ImageNet norm; balanceamento e augmentation NUNCA em val/test | **fixado** | [ADR-0011](docs/decisions/0011-pipeline-de-dados-definitivo.md) |
-| Modelos comparados | ViT-Base/16 + Swin-T | a confirmar | — |
-| Baseline obrigatório | ResNet-50 com pesos ImageNet | fixo do plano | — |
+| Modelos comparados | ViT-Base/16 (`vit_base_patch16_224`) + Swin-T (`swin_tiny_patch4_window7_224`) | **fixado** | [ADR-0012](docs/decisions/0012-modelos-transformer-vit-base-swin-tiny.md) |
+| Baseline obrigatório | ResNet-50 com pesos ImageNet | **fechado** (F-0017) | — |
 
 ## Regras críticas — NÃO violar
 

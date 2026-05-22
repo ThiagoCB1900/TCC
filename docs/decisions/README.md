@@ -60,3 +60,4 @@ Optamos por **X**. Justificativa em 2-4 linhas, ancorada em literatura, dados ou
 | [0009](0009-kaggle-notebooks-como-ambiente-primario-de-treino.md) | Kaggle Notebooks como ambiente primário de treino (substitui ADR-0003) | Accepted | 2026-05-10 |
 | [0010](0010-baseline-v2-hiperparametros-anti-overfit.md) | Baseline V2: LR diferenciado + dropout + augmentation forte para combater overfit (refina ADR-0008) | Accepted | 2026-05-17 |
 | [0011](0011-pipeline-de-dados-definitivo.md) | Pipeline de dados definitivo (consolida 0002/0004/0005/0006/0007 + ablações + regras de ouro) | Accepted | 2026-05-17 |
+| [0012](0012-modelos-transformer-vit-base-swin-tiny.md) | Modelos transformer: ViT-Base/16 e Swin-T (variantes timm, mesma metodologia + McNemar) | Accepted | 2026-05-22 |
