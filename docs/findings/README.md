@@ -61,3 +61,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0017](0017-baseline-v2-overfit-controlado-teto-resnet.md) | Baseline V2: overfit controlado, mas teto do ResNet-50 em ~0,59-0,62 balanced_acc | Confirmed | 2026-05-22 |
 | [0018](0018-transformers-overfit-rapido-swin-melhor.md) | Transformers overfittam rápido com hiperparâmetros V2; Swin-T é o melhor modelo (bal_acc 0,594) | Confirmed | 2026-05-23 |
 | [0019](0019-v3-transformer-destravou-swin-melhor-modelo.md) | V3-transformer destravou ganho; Swin-T V3 é o melhor modelo (bal_acc 0,616, AUC 0,836) | Confirmed | 2026-05-23 |
+| [0020](0020-analise-qualitativa-interpretabilidade-swin-v3.md) | Análise qualitativa Grad-CAM Swin V3: foca ventrículos em demência clara; difuso em classes sutis | Confirmed | 2026-05-23 |
