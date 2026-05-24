@@ -48,7 +48,7 @@
 | Swin-T V2 | 0,723 | 0,594 | 0,528 | 0,823 | 2 | overfit (val pico 0,668) |
 | **Swin-T V3** | 0,720 | **0,616** | **0,551** | **0,836** | 4 | **MELHOR MODELO** (F-0019) |
 
-**Swin-T V3 é o modelo campeão** (bal_acc 0,616, AUC 0,836, F1 minoritária 0,426); significativamente melhor que ViT V3 (McNemar p≈0); Swin hierárquico generaliza melhor que ViT puro neste regime de dados pequenos. Comparação honesta: RanCom-ViT reporta 99,54% acc no mesmo dataset com split por slice (F-0008) — nosso ~0,62 bal_acc com split por paciente é a métrica honesta. Teto ~0,62 (val pico 0,694) → alavanca restante é dados (2.5D); regularização e arquitetura já exploradas. **Pendência:** re-rodar ResNet V2 com persistência de predições para McNemar das 3 arquiteturas.
+**Swin-T V3 é o modelo campeão** (bal_acc 0,616, AUC 0,836, F1 minoritária 0,426); melhor em accuracy E balanced_acc, significativo (McNemar p≈0 vs ResNet e ViT). **Nuance CNN vs ViT (F-0021):** ViT tem accuracy bruta maior (0,692) mas balanced_acc menor (0,568) que ResNet (0,681/0,587) — ViT polariza p/ classe majoritária. McNemar (acurácia bruta) favorece ViT vs ResNet (p=0,0008), mas é enganoso em dado desbalanceado: **reportar McNemar sempre junto da balanced_acc**. Interpretabilidade converge: ResNet/Swin focam ventrículos (marcador real de atrofia); ViT puro espalha atenção (data-hungry, Dosovitskiy) → explica a polarização. Comparação honesta: RanCom-ViT reporta 99,54% acc no mesmo dataset com split por slice (F-0008) — nosso ~0,62 bal_acc com split por paciente é a métrica honesta. Teto ~0,62 (val pico 0,694) → alavanca restante é dados (2.5D).
 
 ## Base de dados — versão Kaggle pré-processada (mudança importante)
 
