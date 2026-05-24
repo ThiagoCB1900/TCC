@@ -1,0 +1,52 @@
+{
+  "best_epoch": 4,
+  "best_metric_name": "balanced_accuracy",
+  "best_metric_val_value": 0.693553372301873,
+  "test_loss": 0.8776109087184655,
+  "test_metrics": {
+    "accuracy": 0.7194983757649014,
+    "balanced_accuracy": 0.6160996613666435,
+    "macro_f1": 0.5506659830451173,
+    "auc_macro": 0.8363067663757912,
+    "f1_per_class": {
+      "non_demented": 0.8419738963132443,
+      "very_mild": 0.3836674636748207,
+      "mild_or_moderate": 0.4263565891472868
+    },
+    "precision_per_class": {
+      "non_demented": 0.9264217873898616,
+      "very_mild": 0.3101397561700862,
+      "mild_or_moderate": 0.3392070484581498
+    },
+    "recall_per_class": {
+      "non_demented": 0.7716355318337781,
+      "very_mild": 0.5028929604628737,
+      "mild_or_moderate": 0.5737704918032787
+    },
+    "confusion": [
+      [
+        8096,
+        2058,
+        338
+      ],
+      [
+        619,
+        1043,
+        412
+      ],
+      [
+        24,
+        262,
+        385
+      ]
+    ],
+    "class_names": [
+      "non_demented",
+      "very_mild",
+      "mild_or_moderate"
+    ],
+    "n_samples": 13237
+  },
+  "total_training_time_seconds": 8022.401025772095,
+  "checkpoint_best": "experiments/runs/20260523_181850_swin_tiny_v3_class3_weighted_kaggle/checkpoint_best.pt"
+}

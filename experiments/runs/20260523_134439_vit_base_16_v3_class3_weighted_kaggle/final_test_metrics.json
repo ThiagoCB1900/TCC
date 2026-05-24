@@ -1,0 +1,52 @@
+{
+  "best_epoch": 2,
+  "best_metric_name": "balanced_accuracy",
+  "best_metric_val_value": 0.6506295894340677,
+  "test_loss": 0.8136093322837789,
+  "test_metrics": {
+    "accuracy": 0.6919996978167259,
+    "balanced_accuracy": 0.5676400251987254,
+    "macro_f1": 0.5135499271638636,
+    "auc_macro": 0.8109210879504894,
+    "f1_per_class": {
+      "non_demented": 0.8271251193887297,
+      "very_mild": 0.3592592592592593,
+      "mild_or_moderate": 0.3542654028436019
+    },
+    "precision_per_class": {
+      "non_demented": 0.9329662437155853,
+      "very_mild": 0.2759958613554061,
+      "mild_or_moderate": 0.29400196656833827
+    },
+    "recall_per_class": {
+      "non_demented": 0.74285169653069,
+      "very_mild": 0.5144648023143684,
+      "mild_or_moderate": 0.4456035767511177
+    },
+    "confusion": [
+      [
+        7794,
+        2448,
+        250
+      ],
+      [
+        539,
+        1067,
+        468
+      ],
+      [
+        21,
+        351,
+        299
+      ]
+    ],
+    "class_names": [
+      "non_demented",
+      "very_mild",
+      "mild_or_moderate"
+    ],
+    "n_samples": 13237
+  },
+  "total_training_time_seconds": 16110.143026351929,
+  "checkpoint_best": "experiments/runs/20260523_134439_vit_base_16_v3_class3_weighted_kaggle/checkpoint_best.pt"
+}

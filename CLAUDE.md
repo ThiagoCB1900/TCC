@@ -33,19 +33,21 @@
 - **Baseline V2 implementado (2026-05-17, ADR-0010):** hiperparâmetros revisitados para combater overfit. LR diferenciado (backbone 1e-5, head 1e-4), `drop_rate=0.3`, `weight_decay=0.1`, augmentation forte (rot ±15°, jitter 0.2, translation 5%), `patience=5`, `warmup=2`. Compatibilidade retroativa preservada via flags (`--uniform-lr --augment light --drop-rate 0.0 ...` reproduz V1). Smoke V2 validou pipeline (param groups corretos: backbone 23.5M / head 6.1k; LR diferenciado aplicado). Notebook 03 atualizado.
 - **Baseline V2 executado no Kaggle (2026-05-22, F-0017):** 2 runs — V2 weighted (bal_acc=0,587; macro_F1=0,513; AUC=0,804; best epoch=11) e V2 noweight (bal_acc=0,546; AUC=0,821; best epoch=9). **Overfit CONTROLADO** (train_loss cai gradual em 16 ep vs colapso em 4 ep do V1; val_loss estável; best epoch 1→11). **Mas métricas não subiram:** teto do ResNet-50 baseline ≈ 0,59-0,62 balanced_acc. O 0,623 do V1 era instável (epoch 1, pré-colapso); V2 weighted (0,587) é o **baseline oficial** (treino estável, número confiável). Gargalo deixou de ser overfit → agora é representação (fatia 2D única + ResNet). Alavanca para subir: dados (2.5D) ou arquitetura (ViT/Swin), não mais regularização.
 - **ViT-Base/16 e Swin-T treinados (2026-05-23, F-0018):** transformers VOLTARAM a overfittar rápido (best epoch 2; train colapsa; val explode) com hiperparâmetros V2. **Swin-T é o melhor modelo** (test bal_acc 0,594 > ResNet 0,587 > ViT 0,521); Swin > ViT com significância (McNemar p=0,017). AUC transformers (0,82) > ResNet (0,80); val pico Swin 0,668 (melhor do projeto) → ganho preso atrás do overfit. ViT-Base subaproveitado (overfit severo, 86M params).
-- **V3-transformer definido (2026-05-23, ADR-0013):** regularização forte para destravar o overfit dos transformers — `lr_backbone 5e-6`, `drop_path 0.2`, `weight_decay 0.2`, `warmup 3` (tudo via CLI, sem mudar código). Notebook 04 atualizado: células de treino agora rodam V3 (`vit_base_16_v3_*`, `swin_tiny_v3_*`); comparação final mostra ResNet V2 + ViT V2/V3 + Swin V2/V3 + McNemar par-a-par.
-- **Próximo passo imediato:** aluno re-importa notebook 04 e roda (Save & Run All) os treinos V3. Critério de sucesso: best epoch mais tardio, val_loss sem explodir, test bal_acc acima de 0,594 (Swin) / 0,521 (ViT). Depois: 2.5D (ADR-0011) no melhor modelo + re-rodar ResNet V2 com persistência para McNemar das 3 arquiteturas.
+- **V3-transformer executado (2026-05-23, F-0019):** regularização forte (ADR-0013) **destravou ganho**. **Swin-T V3 é o modelo campeão** (test bal_acc 0,616; macro_f1 0,551; AUC 0,836; best epoch 4; F1 minoritária 0,426). ViT V3 melhorou signif. sobre V2 (0,521→0,568, McNemar p≈0) mas segue overfittando (best ep2, 86M params demais p/ 242 pacientes). Swin V3 >> ViT V3 (McNemar p≈0). Overfit atenuado (val_loss pico 3,0→1,5). Teto ~0,62 (val pico 0,694).
+- **Próximo passo (decisão pendente):** modelo campeão definido (Swin-T V3). Opções: (a) **interpretabilidade** Attention Rollout no Swin V3 (pilar inegociável, cronograma semana 4, entrega cópia ~2026-06-03); (b) **2.5D** (ADR-0011) alavanca de dados; (c) re-rodar ResNet V2 c/ persistência p/ McNemar das 3 arquiteturas. Recomendado: (a) interpretabilidade primeiro (inegociável + prazo).
 
 ## Resultados consolidados (test set, split_v1, 3 classes, weighted CE)
 
 | Modelo | accuracy | balanced_acc | macro_f1 | auc_macro | best_ep | obs |
 |---|---:|---:|---:|---:|---:|---|
-| ResNet-50 V1 weighted | 0,699 | 0,623* | 0,554 | 0,804 | 1 | *instável (epoch 1, pré-colapso) |
-| **ResNet-50 V2 weighted** | 0,681 | 0,587 | 0,513 | 0,804 | 11 | baseline oficial (treino estável) |
-| ViT-Base/16 weighted | 0,730 | 0,521 | 0,483 | 0,822 | 2 | overfit severo (F-0018) |
-| **Swin-T weighted** | 0,723 | **0,594** | **0,528** | **0,823** | 2 | **melhor atual**; overfit (val pico 0,668) |
+| ResNet-50 V1 | 0,699 | 0,623* | 0,554 | 0,804 | 1 | *instável (epoch 1, pré-colapso) |
+| ResNet-50 V2 | 0,681 | 0,587 | 0,513 | 0,804 | 11 | baseline oficial CNN |
+| ViT-Base/16 V2 | 0,730 | 0,521 | 0,483 | 0,822 | 2 | overfit severo |
+| ViT-Base/16 V3 | 0,692 | 0,568 | 0,514 | 0,811 | 2 | V3>V2 signif. (McNemar p≈0) |
+| Swin-T V2 | 0,723 | 0,594 | 0,528 | 0,823 | 2 | overfit (val pico 0,668) |
+| **Swin-T V3** | 0,720 | **0,616** | **0,551** | **0,836** | 4 | **MELHOR MODELO** (F-0019) |
 
-Comparação honesta: RanCom-ViT reporta 99,54% acc no mesmo dataset com split por slice (F-0008) — nosso ~0,59-0,72 acc com split por paciente é a métrica honesta. McNemar ViT vs Swin: p=0,017 (Swin significativamente melhor). Teto persistente ~0,59-0,67 → gargalo de dados (fatia 2D única) + regularização insuficiente dos transformers.
+**Swin-T V3 é o modelo campeão** (bal_acc 0,616, AUC 0,836, F1 minoritária 0,426); significativamente melhor que ViT V3 (McNemar p≈0); Swin hierárquico generaliza melhor que ViT puro neste regime de dados pequenos. Comparação honesta: RanCom-ViT reporta 99,54% acc no mesmo dataset com split por slice (F-0008) — nosso ~0,62 bal_acc com split por paciente é a métrica honesta. Teto ~0,62 (val pico 0,694) → alavanca restante é dados (2.5D); regularização e arquitetura já exploradas. **Pendência:** re-rodar ResNet V2 com persistência de predições para McNemar das 3 arquiteturas.
 
 ## Base de dados — versão Kaggle pré-processada (mudança importante)
 
