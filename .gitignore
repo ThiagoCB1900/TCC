@@ -36,6 +36,8 @@ results/**/*.png
 results/**/*.jpg
 !results/**/final_*.png
 !results/**/final_*.jpg
+# Mapas de interpretabilidade SÃO versionados (poucos, importantes para o TCC)
+!results/interpretability/**/*.png
 
 # Python
 __pycache__/
