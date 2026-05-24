@@ -7,12 +7,12 @@ from __future__ import annotations
 
 import torch
 
-from src.models.resnet import build_resnet50
+from src.models.resnet import build_resnet18, build_resnet50
 from src.models.swin import build_swin_tiny
 from src.models.vit import build_vit_base16
 
 # Nomes aceitos no --model / cfg.model_name
-MODEL_NAMES = ("resnet50", "vit_base_16", "swin_tiny")
+MODEL_NAMES = ("resnet50", "resnet18", "vit_base_16", "swin_tiny")
 
 
 def build_model(
@@ -28,6 +28,8 @@ def build_model(
     """
     if name == "resnet50":
         return build_resnet50(num_classes, pretrained=pretrained, drop_rate=drop_rate)
+    if name == "resnet18":
+        return build_resnet18(num_classes, pretrained=pretrained, drop_rate=drop_rate)
     if name == "vit_base_16":
         return build_vit_base16(
             num_classes, pretrained=pretrained, drop_rate=drop_rate, drop_path_rate=drop_path_rate

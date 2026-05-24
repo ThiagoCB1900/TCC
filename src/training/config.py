@@ -13,7 +13,7 @@ from typing import Literal
 import yaml
 
 LabelScheme = Literal["class_3", "class_binary"]
-ModelName = Literal["resnet50", "vit_base_16", "swin_tiny"]
+ModelName = Literal["resnet50", "resnet18", "vit_base_16", "swin_tiny"]
 # (mantido em sincronia com src.models.factory.MODEL_NAMES)
 
 
