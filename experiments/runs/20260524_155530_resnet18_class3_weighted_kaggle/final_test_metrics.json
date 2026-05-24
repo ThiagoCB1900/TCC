@@ -1,0 +1,52 @@
+{
+  "best_epoch": 9,
+  "best_metric_name": "balanced_accuracy",
+  "best_metric_val_value": 0.64833399973344,
+  "test_loss": 0.8197299368282475,
+  "test_metrics": {
+    "accuracy": 0.6654831155095565,
+    "balanced_accuracy": 0.5008019011853867,
+    "macro_f1": 0.45798501632234273,
+    "auc_macro": 0.7767431433998544,
+    "f1_per_class": {
+      "non_demented": 0.811584805749176,
+      "very_mild": 0.35398230088495575,
+      "mild_or_moderate": 0.20838794233289645
+    },
+    "precision_per_class": {
+      "non_demented": 0.9369931378665003,
+      "very_mild": 0.2610487749026792,
+      "mild_or_moderate": 0.18596491228070175
+    },
+    "recall_per_class": {
+      "non_demented": 0.7157834540602364,
+      "very_mild": 0.549662487945998,
+      "mild_or_moderate": 0.23695976154992549
+    },
+    "confusion": [
+      [
+        7510,
+        2756,
+        226
+      ],
+      [
+        464,
+        1140,
+        470
+      ],
+      [
+        41,
+        471,
+        159
+      ]
+    ],
+    "class_names": [
+      "non_demented",
+      "very_mild",
+      "mild_or_moderate"
+    ],
+    "n_samples": 13237
+  },
+  "total_training_time_seconds": 3802.991344690323,
+  "checkpoint_best": "experiments/runs/20260524_155530_resnet18_class3_weighted_kaggle/checkpoint_best.pt"
+}

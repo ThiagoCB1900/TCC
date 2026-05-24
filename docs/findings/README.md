@@ -63,3 +63,4 @@ Qualquer coisa que tenha confundido durante a investigação. Importante para n�
 | [0019](0019-v3-transformer-destravou-swin-melhor-modelo.md) | V3-transformer destravou ganho; Swin-T V3 é o melhor modelo (bal_acc 0,616, AUC 0,836) | Confirmed | 2026-05-23 |
 | [0020](0020-analise-qualitativa-interpretabilidade-swin-v3.md) | Análise qualitativa Grad-CAM Swin V3: foca ventrículos em demência clara; difuso em classes sutis | Confirmed | 2026-05-23 |
 | [0021](0021-cnn-vs-vit-vs-swin-metricas-e-interpretabilidade.md) | CNN vs ViT vs Swin: métricas + interpretabilidade convergem (ViT puro data-hungry; CNN/Swin focam ventrículos) | Confirmed | 2026-05-23 |
+| [0022](0022-ablacao-capacidade-resnet18-refuta-menos-params.md) | Ablação de capacidade: ResNet-18 é a pior; "menos parâmetros generaliza melhor" refutado (McNemar p=2,8e-6) | Confirmed | 2026-05-24 |
